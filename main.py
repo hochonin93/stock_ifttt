@@ -2,83 +2,54 @@ import requests
 import random
 import time
 import threading
-ip =[ 
-    '80.87.184.49:41258',
-    '85.238.98.160:34167',
-    '101.255.103.201:53281',
-    '118.200.73.124:8080',
-    '168.228.150.5:39280',
-    '119.81.199.81:8123',
-    '1.10.188.203:45476',
-    '134.122.112.27:8080',
-    '119.81.199.86:8123',
-    '179.127.242.97:34920',
-    '173.192.128.238:25',
-    '182.71.102.215:3128',
-    '118.172.201.89:31813',
-    '161.202.226.195:80',
-    '5.189.133.231:80',
-    '185.128.37.14:8080',
-    '119.81.199.82:8123',
-    '119.81.199.83:31288',
-    '78.38.115.210:60490',
-    '45.63.43.103:80',
-    '194.5.192.154:80',
-    '144.217.118.206:8080',
-    '5.2.164.205:59914',
-    '80.211.115.69:3128',
-    '142.93.197.146:80',
-    '185.79.242.253:50828',
-    '213.6.226.202:58154',
-    '125.25.165.97:39021',
-    '27.116.51.115:8080',
-    '117.58.241.164:52636',
-    '95.79.99.148:3128',
-    '103.108.157.98:8080',
-    '103.102.28.134:38166',
-    '85.10.219.98:1080',
-    '88.101.209.96:61664',
-    '123.49.49.166:23500',
-    '134.35.231.176:8080',
-    '151.253.165.70:8080',
-    '45.236.130.214:8080',
-    '115.127.109.2:45067',
-    '144.91.116.171:443',
-    '128.199.143.66:3128',
-    '80.187.140.26:8080',
-    '186.250.117.234:36241',
-    '104.41.38.129:80',
-    '102.165.69.201:8080',
-    '5.255.26.222:8080',
-    '144.217.163.138:8080',
-    '182.52.90.117:45535',
-    '144.76.214.154:1080',
-    '189.9.55.7:8080',
-    '45.77.233.125:3128',
-    '177.134.231.93:8080',
-    '148.101.44.100:999',
-    '103.234.252.3:3888',
-    '198.58.10.173:8080',
-    '110.138.232.72:8080',
-    '68.183.180.28:1080',
-    '180.252.194.184:8080',
-    '18.229.248.53:8888',
-    '45.163.134.68:8080',
-    '148.101.23.95:8080',
-    '183.89.110.101:8080',
-    '36.81.28.236:8080',
-    '125.166.130.87:8080',
-    '176.120.208.161:8081',
-    '180.245.58.28:8080',
-    '178.128.106.70:1080',
-    '122.100.92.168:80',
-    '119.237.73.133:3128',
-    '203.245.28.120:8080',
-    '168.131.152.152:3128',
-    '218.145.215.150:3128',
-    '165.22.36.75:8888',
-    ]
-print(len(ip))
+import MySQLdb
+
+class MyThread(threading.Thread):
+    def __init__(self, num):
+        threading.Thread.__init__(self)
+        self.num = num
+
+    def run(self):
+        ii = 0
+        while True:    
+            url = a1 if random.randint(0,1) == 1 else a2
+            ip1 = ips[random.randint(0,len(ips)-1)]
+            proxie = {
+                'http':'http://'+ip1
+            }
+            kk = proxie
+            try:
+                res = requests.get(url,headers=headers,proxies = kk,timeout=10)
+            except:
+                #print('IP問題:%s'%(ip1))
+                del_ip(ip1)
+            time.sleep(30)
+            ii +=1
+            print("Thread{},{}".format(self.num,ii))
+
+def ip():
+    
+    cursor=conn.cursor()
+    mySql_select_query = "SELECT * FROM `proxy_list` WHERE `type` = 'http'"
+    cursor.execute(mySql_select_query)
+    results = cursor.fetchall()
+    for row in results:
+        ips.append(row[2])
+
+def del_ip(delip):
+    cursor=conn.cursor()
+    mySql_del_query = "DELETE FROM proxy_list WHERE ip = '%s'" % (delip)
+    cursor.execute(mySql_del_query)
+    conn.commit()
+    print('已刪除ip:%s'%(delip))
+
+
+conn = MySQLdb.connect(host="163.22.250.52",user="mqtt", passwd="mqtt",db="chonin", charset="utf8")
+ips = []   
+ip()
+
+print("共有IP:{}".format(len(ips)))
+
 headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate',
@@ -93,37 +64,17 @@ headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
     
 } 
-proxie = {
-    'http':'http://'+ip[random.randint(0,len(ip)-1)]
-}
 
 
 a1 = 'http://www.nkut.edu.tw/front/News/news.php?ID=bmt1dF9tYWluJk5ld3M=&Sn=1202'
 a2 = 'http://www.nkut.edu.tw/front/News/news.php?ID=bmt1dF9tYWluJk5ld3M=&Sn=1203'
 
-class MyThread(threading.Thread):
-    def __init__(self, num):
-        threading.Thread.__init__(self)
-        self.num = num
 
-    def run(self):
-        ii = 0
-        while True:    
-            url = a1 if random.randint(0,1) == 1 else a2
-            proxie = {
-                'http':'http://'+ip[random.randint(0,len(ip)-1)]
-            }
-            kk = proxie
-            try:
-                res = requests.get(url,headers=headers,proxies = kk,timeout=10)
-                #res = requests.get(a2,headers=headers,proxies = kk,timeout=10)
-            except:print('IP問題:%s'%(kk['http']))
-            time.sleep(30)
-            ii +=1
-            print("Thread{},{}".format(self.num,ii))
 threads = []     
 num = int(input(''))
 for i in range(num):
-  threads.append(MyThread(i))
-  time.sleep(3)
-  threads[i].start()
+    threads.append(MyThread(i))
+    time.sleep(5)
+    threads[i].start()
+    threads[i].join()
+  
