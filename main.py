@@ -154,4 +154,5 @@ threads = []
 num = int(input(''))
 for i in range(num):
   threads.append(MyThread(i))
+  time.sleep(3)
   threads[i].start()
