@@ -21,7 +21,6 @@ ip =[
     '161.202.226.195:80',
     '5.189.133.231:80',
     '185.128.37.14:8080',
-    '203.202.245.62:80',
     '81.88.118.105:8118',
     '119.81.199.82:8123',
     '119.81.199.83:31288',
@@ -58,13 +57,10 @@ ip =[
     '80.187.140.26:8080',
     '186.250.117.234:36241',
     '104.41.38.129:80',
-    '159.203.28.58:3128',
     '102.165.69.201:8080',
     '185.44.231.2:34244',
-    '119.42.86.221:8080',
     '5.255.26.222:8080',
     '144.217.163.138:8080',
-    '80.91.17.113:41258',
     '164.77.147.93:53281',
     '182.52.90.117:45535',
     '188.235.255.70:32994',
@@ -72,19 +68,16 @@ ip =[
     '70.35.213.229:36127',
     '144.76.214.154:1080',
     '85.208.200.165:36369',
-    '136.228.128.6:52182',
     '110.39.187.50:49850',
     '189.9.55.7:8080',
     '45.117.237.158:8080',
     '45.77.233.125:3128',
     '177.134.231.93:8080',
     '148.101.44.100:999',
-    '14.207.161.119:8080',
     '103.234.252.3:3888',
     '189.115.158.217:8080',
     '198.58.10.173:8080',
     '110.138.232.72:8080',
-    '178.44.177.145:8081',
     '68.183.180.28:1080',
     '128.199.148.98:3128',
     '180.252.194.184:8080',
@@ -97,7 +90,6 @@ ip =[
     '182.253.74.93:8080',
     '183.89.110.101:8080',
     '223.206.58.234:8080',
-    '149.28.158.58:3128',
     '36.81.28.236:8080',
     '125.166.168.203:8080',
     '171.6.157.140:8080',
@@ -112,7 +104,6 @@ ip =[
     '203.245.28.120:8080',
     '210.103.3.169:8080',
     '168.131.152.152:3128',
-    '218.145.215.150:3128',
     '218.145.215.150:3128',
     '165.22.36.75:8888',
     ]
@@ -139,24 +130,28 @@ proxie = {
 a1 = 'http://www.nkut.edu.tw/front/News/news.php?ID=bmt1dF9tYWluJk5ld3M=&Sn=1202'
 a2 = 'http://www.nkut.edu.tw/front/News/news.php?ID=bmt1dF9tYWluJk5ld3M=&Sn=1203'
 
+class MyThread(threading.Thread):
+    def __init__(self, num):
+        threading.Thread.__init__(self)
+        self.num = num
 
-def run():
-    ii = 0
-    while True:    
-        url = a1 if random.randint(0,1) == 1 else a2
-        proxie = {
-            'http':'http://'+ip[random.randint(0,len(ip)-1)]
-        }
-        kk = proxie
-        try:
-            res = requests.get(url,headers=headers,proxies = kk,timeout=10)
-            #res = requests.get(a2,headers=headers,proxies = kk,timeout=10)
-        except:print('IP問題:%s'%(kk['http']))
-        time.sleep(30)
-        ii +=1
-        print(ii)
+    def run(self):
+        ii = 0
+        while True:    
+            url = a1 if random.randint(0,1) == 1 else a2
+            proxie = {
+                'http':'http://'+ip[random.randint(0,len(ip)-1)]
+            }
+            kk = proxie
+            try:
+                res = requests.get(url,headers=headers,proxies = kk,timeout=10)
+                #res = requests.get(a2,headers=headers,proxies = kk,timeout=10)
+            except:print('IP問題:%s'%(kk['http']))
+            time.sleep(30)
+            ii +=1
+            print("Thread{},{}".format(self.num,ii))
 threads = []     
 num = int(input(''))
 for i in range(num):
-  threads.append(run())
+  threads.append(MyThread(i))
   threads[i].start()
